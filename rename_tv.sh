@@ -13,7 +13,7 @@ fi
 
 folder_path="/mnt/mr-man/media/tv/"$folder"/season_"$season""
 if [[ ! -d "$folder_path" ]]; then
-        read -p "The folder destinaion does not exist. Would you like to create it? (y/n: " response
+        read -p "The folder destinaion does not exist. Would you like to create it? (y/n): " response
         if [[ "$response" == "y" ]]; then
                 mkdir "$folder_path"
         else
