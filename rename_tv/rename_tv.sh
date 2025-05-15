@@ -38,7 +38,7 @@ rename_file() {
         new_name=""$title".S"$season_string"E"$episode_string".mkv"
         full_path=""$folder_path"/"$new_name""
 
-        mv "$basename" "$full_path"
+        mv "$1" "$full_path"
         if [[ $? -ne 0 ]]; then
                 echo "error occured moving file"
                 exit 1
@@ -66,6 +66,6 @@ for file in "$DIRECTORY"/*; do
                 rm -rf "$file"
 
         elif [[ -f "$file" && "$basename_lower" == *"$title_lower"* && "$file" == *.mkv ]]; then
-                rename_file $(basename "$inner_file")
+                rename_file $(basename "$file")
         fi
 done
