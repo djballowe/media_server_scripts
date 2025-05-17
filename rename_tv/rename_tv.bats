@@ -134,3 +134,41 @@ teardown() {
 
    echo "$output" | grep -q "exiting without moving files"
 }
+
+@test "should match even with spaces" {
+   touch This.Is.A.TV.show.S01E01.mkv
+   touch this.is.a.tv.show.S01E02.mkv
+
+   mkdir -p "$MEDIA_BASE_PATH/this/season_1"
+
+   run "$BATS_TEST_DIRNAME/$SCRIPT" "This is a tv show" "1" "1" "this"
+
+   [ "$status" -eq 0 ] || {
+      echo "output: $output"
+      return 1
+   }
+
+   echo $(ls "$MEDIA_BASE_PATH/this/season_1")
+
+   [ -f "$MEDIA_BASE_PATH/this/season_1/This is a tv show.S01E01.mkv" ]
+   [ -f "$MEDIA_BASE_PATH/this/season_1/This is a tv show.S01E02.mkv" ]
+}
+
+@test "should match dots to spaces" {
+   touch This\ Is\ A\ TV\ show\ S01E01.mkv
+   touch this\ is\ a\ tv\ show\ S01E02.mkv
+
+   mkdir -p "$MEDIA_BASE_PATH/this/season_1"
+
+   run "$BATS_TEST_DIRNAME/$SCRIPT" "This.Is.A.Tv.Show" "1" "1" "this"
+
+   [ "$status" -eq 0 ] || {
+      echo "output: $output"
+      return 1
+   }
+
+   echo $(ls "$MEDIA_BASE_PATH/this/season_1")
+
+   [ -f "$MEDIA_BASE_PATH/this/season_1/This.Is.A.Tv.Show.S01E01.mkv" ]
+   [ -f "$MEDIA_BASE_PATH/this/season_1/This.Is.A.Tv.Show.S01E02.mkv" ]
+}
