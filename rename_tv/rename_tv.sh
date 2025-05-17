@@ -49,9 +49,9 @@ rename_file() {
 }
 
 for file in "$DIRECTORY"/*; do
-        title_lower=$(echo "$title" | tr '[:upper:]' '[:lower:]')
+        title_lower=$(echo "$title" | tr '[:upper:]' '[:lower:]' | tr -d '. ')
         basename=$(basename "$file")
-        basename_lower=$(echo "$basename" | tr '[:upper:]' '[:lower:]')
+        basename_lower=$(echo "$basename" | tr '[:upper:]' '[:lower:]' | tr -d '. ')
 
         if [[ -d "$file" && "$basename_lower" == *"$title_lower"* ]]; then
                 echo "download is a dirctory attempting to extract .mkv"
