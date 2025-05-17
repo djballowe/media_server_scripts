@@ -14,15 +14,15 @@ folder=$4
 MEDIA_BASE_PATH="${MEDIA_BASE_PATH:-/mnt/media/television}"
 folder_path="${MEDIA_BASE_PATH}/${folder}/season_${season}"
 
-# if [[ ! -d "$folder_path" ]]; then
-#         read -p "The folder destinaion does not exist. Would you like to create it? (y/n): " response
-#         if [[ "$response" == "y" ]]; then
-#                 mkdir -p "$folder_path"
-#         else
-#                 echo "exiting without moving files"
-#                 exit 1
-#         fi
-# fi
+if [[ ! -d "$folder_path" ]]; then
+        read -p "The folder destinaion does not exist. Would you like to create it? (y/n): " response
+        if [[ "$response" == "y" ]]; then
+                mkdir -p "$folder_path"
+        else
+                echo "exiting without moving files"
+                exit 1
+        fi
+fi
 
 rename_file() {
         episode_string="$episode"
@@ -59,13 +59,13 @@ for file in "$DIRECTORY"/*; do
                 for inner_file in *; do
                         if [[ -f "$inner_file" && "$inner_file" == *.mkv ]]; then
                                 echo "$inner_file has an mkv extention and is a file"
-                                rename_file $(basename "$inner_file")
+                                rename_file "$inner_file"
                         fi
                 done
                 cd ..
                 rm -rf "$file"
 
         elif [[ -f "$file" && "$basename_lower" == *"$title_lower"* && "$file" == *.mkv ]]; then
-                rename_file $(basename "$file")
+                rename_file "$file"
         fi
 done

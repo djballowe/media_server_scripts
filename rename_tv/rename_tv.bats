@@ -32,7 +32,7 @@ teardown() {
    fi
 }
 
-@test "script detects .mkv files and files in folders" {
+@test "script detects .mkv files" {
    # files
    touch This.Is.A.TV.show.S01E01.mkv
    touch this.is.a.tv.show.S01E02.mkv
@@ -40,13 +40,10 @@ teardown() {
    touch this.is.a.virus.pretending.to.be.a.tv.show.S01E03.mkv.py
    touch this.is.not.a.tv.show.txt
 
-   # folder only
-   mkdir this.is.a.folder.mkv
-
-   # folder with mkv inside
-   mkdir this.show.folder
-   touch this.show.folder/this.is.a.show.S01E04.mkv
-   touch this.show.folder/this.is.not.a.show.nfo
+   # files from a different show
+   touch not.the.correct.show.S01E03.mkv
+   touch not.the.correct.show.S01E04.mkv
+   touch not.the.correct.show.S01E05.mkv
 
    # create existing test media directory
    mkdir -p "$MEDIA_BASE_PATH/this/season_1"
@@ -62,18 +59,40 @@ teardown() {
    [ -f "$MEDIA_BASE_PATH/this/season_1/This.S01E01.mkv" ]
    [ -f "$MEDIA_BASE_PATH/this/season_1/This.S01E02.mkv" ]
    [ -f "$MEDIA_BASE_PATH/this/season_1/This.S01E03.mkv" ]
-   [ -f "$MEDIA_BASE_PATH/this/season_1/This.S01E04.mkv" ]
 
    # original files should be moved
    [ ! -f "$TEST_DIR/This.Is.A.TV.show.S01E01.mkv" ]
    [ ! -f "$TEST_DIR/this.is.a.tv.show.S01E02.mkv" ]
    [ ! -f "$TEST_DIR/THIS.IS.A.TV.SHOW.S01E03.mkv" ]
 
+   # non target show untouched
+   [ -f "$TEST_DIR/not.the.correct.show.S01E03.mkv" ]
+   [ -f "$TEST_DIR/not.the.correct.show.S01E04.mkv" ]
+   [ -f "$TEST_DIR/not.the.correct.show.S01E05.mkv" ]
+
    # non mkv files untouched
    [ -f "$TEST_DIR/this.is.a.virus.pretending.to.be.a.tv.show.S01E03.mkv.py" ]
    [ -f "$TEST_DIR/this.is.not.a.tv.show.txt" ]
+}
 
-   # any directories deleted
+@test "detects files in folders" {
+   mkdir this.is.a.folder.mkv
+   mkdir folder
+
+   mkdir this.show.folder
+   touch this.show.folder/this.is.a.show.S01E04.mkv
+   touch this.show.folder/this.is.not.a.show.nfo
+
+   mkdir -p "$MEDIA_BASE_PATH/this/season_1"
+
+   run "$BATS_TEST_DIRNAME/$SCRIPT" "This" "1" "4" "this"
+
+   [ "$status" -eq 0 ] || {
+      echo "output: $output"
+   }
+
+   [ -f "$MEDIA_BASE_PATH/this/season_1/This.S01E04.mkv" ]
+
    [ ! -d "$TEST_DIR/this.is.a.folder.mkv" ]
    [ ! -d "$TEST_DIR/this.show.folder" ]
 }
