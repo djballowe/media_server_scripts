@@ -6,14 +6,14 @@ BATS_TEST_TMPDIR="$(pwd)"
 setup() {
    TEST_DIR="$(mktemp -d "${BATS_TEST_TMPDIR}/test_rename_tv_XXXXXX")"
 
-   echo "setup: ${TEST_DIR}"
+   # echo "setup: ${TEST_DIR}"
    cd "$TEST_DIR"
 
    export MEDIA_BASE_PATH="$TEST_DIR/mnt/media/television"
 }
 
 teardown() {
-   echo "teardown: ${TEST_DIR}"
+   # echo "teardown: ${TEST_DIR}"
    cd "$BATS_TEST_TMPDIR"
    rm -rf "$TEST_DIR"
    unset MEDIA_BASE_PATH
@@ -53,6 +53,7 @@ teardown() {
    # exits without an error
    [ "$status" -eq 0 ] || {
       echo "output: $output"
+      return 1
    }
 
    # renamed files in new destination
@@ -89,10 +90,47 @@ teardown() {
 
    [ "$status" -eq 0 ] || {
       echo "output: $output"
+      return 1
    }
 
    [ -f "$MEDIA_BASE_PATH/this/season_1/This.S01E04.mkv" ]
 
    [ ! -d "$TEST_DIR/this.is.a.folder.mkv" ]
    [ ! -d "$TEST_DIR/this.show.folder" ]
+}
+
+@test "reply y to create prompt" {
+   touch This.Is.A.TV.show.S01E01.mkv
+   touch this.is.a.tv.show.S01E02.mkv
+
+   # destination file doesnt exist before prompt
+   [ ! -d "$MEDIA_BASE_PATH/this/season_1" ]
+
+   run "$BATS_TEST_DIRNAME/$SCRIPT" "This" "1" "1" "this" <<<"y"
+
+   [ "$status" -eq 0 ] || {
+      echo "output: $output"
+      return 1
+   }
+
+   # destination file exists
+   [ -d "$MEDIA_BASE_PATH/this/season_1" ]
+
+   # mkv files in created destination folder
+   [ -f "$MEDIA_BASE_PATH/this/season_1/This.S01E01.mkv" ]
+   [ -f "$MEDIA_BASE_PATH/this/season_1/This.S01E02.mkv" ]
+}
+
+@test "reply n to create prompt" {
+   touch This.Is.A.TV.show.S01E01.mkv
+   touch this.is.a.tv.show.S01E02.mkv
+
+   # destination file doesnt exist before prompt
+   [ ! -d "$MEDIA_BASE_PATH/this/season_1" ]
+
+   run "$BATS_TEST_DIRNAME/$SCRIPT" "This" "1" "1" "this" <<<"n"
+
+   [ "$status" -eq 1 ]
+
+   echo "$output" | grep -q "exiting without moving files"
 }
