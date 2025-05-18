@@ -38,7 +38,7 @@ rename_file() {
         new_name=""$title".S"$season_string"E"$episode_string".mkv"
         full_path=""$folder_path"/"$new_name""
 
-        mv "$1" "$full_path"
+        sudo mv "$1" "$full_path"
         if [[ $? -ne 0 ]]; then
                 echo "error occured moving file"
                 exit 1
