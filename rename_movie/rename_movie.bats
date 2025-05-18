@@ -60,7 +60,7 @@ teardown() {
     [ -f "$TEST_DIR/this.is.not.a.movie.txt" ]
 }
 
-@test "should match even with spaces" {
+@test "should match dots with spaces" {
     touch This.Is.A.movie.mkv
 
     mkdir -p "$MEDIA_BASE_PATH"
@@ -73,5 +73,21 @@ teardown() {
     }
 
     [ ! -f "$TEST_DIR/This.Is.A.movie.mkv" ]
+    [ -f "$MEDIA_BASE_PATH/This is a movie (2020).mkv" ]
+}
+
+@test "should match spaces" {
+    touch This\ Is\ A\ movie.mkv
+
+    mkdir -p "$MEDIA_BASE_PATH"
+
+    run "$BATS_TEST_DIRNAME/$SCRIPT" "This is a movie" "2020"
+
+    [ "$status" -eq 0 ] || {
+        echo "output: $output"
+        return 1
+    }
+
+    [ ! -f "$TEST_DIR/This Is A movie.mkv" ]
     [ -f "$MEDIA_BASE_PATH/This is a movie (2020).mkv" ]
 }
