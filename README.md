@@ -9,3 +9,6 @@ uses ffmpeg and dovi_tool to convert mkv files ripped with dolby vision profile 
 `rename_tv.sh`
 
 batch renames and moves tv files to server
+
+`rename_movie.sh`
+renames and moves movie files to server
