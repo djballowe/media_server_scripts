@@ -13,3 +13,7 @@ batch renames and moves tv files to server
 `rename_movie.sh`
 
 renames and moves movie files to server
+
+`move_media.sh`
+
+cron script that runs and transfers files to staging folder on server in secure ssh jail
